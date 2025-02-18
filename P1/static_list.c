@@ -47,14 +47,14 @@ void deleteAtPosition(tPosL p, tList *L) {
     }
 }
 
-tPosL findItem(tUserName n, tList L) {
+tPosL findItem(tConsoleId n, tList L) {
     tPosL p;
 
     if (L.lastPos == LNULL) { // lista vacía
         return LNULL;
     } else {
-        for (p = 0; (p < L.lastPos) && (strcmp(L.data[p].userName, n) != 0); p++);
-        if (strcmp(L.data[p].userName, n) == 0) {
+        for (p = 0; (p < L.lastPos) && (strcmp(L.data[p].consoleId, n) != 0); p++);
+        if (strcmp(L.data[p].consoleId, n) == 0) {
             return p;
         } else {
             return LNULL;
@@ -89,3 +89,4 @@ tPosL next(tPosL p, tList L) {
         return ++p;
     }
 
+}
