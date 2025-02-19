@@ -68,9 +68,9 @@ void deleteAtPosition(tPosL p, tList *L) {
     free(p);
 }
 
-tPosL findItem(tUserName n, tList L) {
+tPosL findItem(tConsoleId n, tList L) {
     tPosL p;
-    for (p = L; (p != LNULL) && (strcmp(p->data.userName, n) != 0); p = p->next);
+    for (p = L; (p != LNULL) && (strcmp(p->data.consoleId, n) != 0); p = p->next);
     return p;
 }
 

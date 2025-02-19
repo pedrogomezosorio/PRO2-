@@ -58,7 +58,7 @@ void deleteAtPosition(tPosL p, tList *L);
  *  Precondición: Position es una posición válida
  *  Postcondición: las posiciones de los elementos de la lista pudieron haber variado
  */
-tPosL findItem(tUserName n, tList L);
+tPosL findItem(tConsoleId n, tList L);
 /*
  *  Objetivo: buscar la posición de cierto elemento
  *  Entradas: - Item -> elemento a buscar
