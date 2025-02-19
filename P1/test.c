@@ -8,6 +8,7 @@
 #include "static_list.h"
 #endif
 
+
 void print_list(tList list) {
     tPosL pos;
     tItemL item;
@@ -99,5 +100,6 @@ int main() {
 
     insertItem(item1, LNULL, &list);
     print_list(list);
+
 
 }
