@@ -4,7 +4,7 @@
  * AUTHOR 1: ***************************** LOGIN 1: **********
  * AUTHOR 2: ***************************** LOGIN 2: **********
  * GROUP: *.*
- * DATE: ** / ** / **
+ * DATE: ** / ** / **xlwE
  */
 
 #include <stdio.h>
@@ -87,8 +87,21 @@ int main(int nargs, char **args) {
     return 0;
 }
 
-
-
-
-
-
+/*void new(tList L, tItemL consola)
+{
+    tPosL pos;
+    tItemL item;
+    pos = findItem(consola.consoleId, L);
+    if (pos == LNULL)
+    {
+        insertItem(consola, LNULL, &L);
+    }
+    else
+    {
+        item = getItem(pos, L);
+        if (item.consolePrice < consola.consolePrice)
+        {
+            updateItem(consola, pos, &L);
+        }
+    }
+}*/

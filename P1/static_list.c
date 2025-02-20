@@ -18,20 +18,21 @@ void createEmptyList(tList *L) {
 bool insertItem(tItemL d, tPosL p, tList *L) {
     tPosL i;
 
-    if (L->lastPos == MAX-1){   // lista llena
+    if (L->lastPos == MAX-1)   // lista llena
         return false;
-    } else {
-        L->lastPos++;
-        if (p == LNULL) {   // insertar en la última posición
-            L->data[L->lastPos] = d;
-        } else {    // insertar en una posición intermedia
-            for (i = L->lastPos; i > p; i--) {
-                L->data[i] = L->data[i-1];
-            }
-            L->data[p] = d;
-        }
-        return true;
+
+    L->lastPos++;
+    if (p == LNULL)   // insertar en la última posición
+        L->data[L->lastPos] = d;
+    else
+    {    // insertar en una posición intermedia
+        for (i = L->lastPos; i > p; i--)
+            L->data[i] = L->data[i-1];
+
+        L->data[p] = d;
     }
+
+    return true;
 }
 
 void updateItem(tItemL d, tPosL p, tList *L) {
@@ -42,23 +43,24 @@ void deleteAtPosition(tPosL p, tList *L) {
     tPosL i;
     L->lastPos--;
 
-    for (i = p; i <= L->lastPos; i++) {
+    for (i = p; i <= L->lastPos; i++)
         L->data[i] = L->data[i+1];
-    }
 }
 
 tPosL findItem(tConsoleId n, tList L) {
     tPosL p;
 
-    if (L.lastPos == LNULL) { // lista vacía
+    // if (L.lastPos == LNULL) { // lista vacía
+    // return LNULL;
+    if (isEmptyList(L))
         return LNULL;
-    } else {
-        for (p = 0; (p < L.lastPos) && (strcmp(L.data[p].consoleId, n) != 0); p++);
-        if (strcmp(L.data[p].consoleId, n) == 0) {
+    else
+    {
+        for (p = first(L); p != last(L) && (strcmp(L.data[p].consoleId, n) != 0); p = next(p, L));
+        if (strcmp(L.data[p].consoleId, n) == 0)
             return p;
-        } else {
+        else
             return LNULL;
-        }
     }
 }
 
@@ -70,7 +72,7 @@ tItemL getItem(tPosL p, tList L) {
     return L.data[p];
 }
 
-tPosL first(__attribute__((unused)) tList L) {
+tPosL first(tList L) {
     return 0;
 }
 
@@ -78,15 +80,14 @@ tPosL last(tList L) {
     return L.lastPos;
 }
 
-tPosL previous(tPosL p, __attribute__((unused)) tList L) {
+tPosL previous(tPosL p, tList L) {
     return --p;
 }
 
 tPosL next(tPosL p, tList L) {
-    if (p == L.lastPos) {
+    if (p == L.lastPos)
         return LNULL;
-    } else {
+    else
         return ++p;
-    }
 
 }

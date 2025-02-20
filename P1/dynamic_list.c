@@ -24,30 +24,29 @@ bool createNode(tPosL *p) {
 bool insertItem(tItemL d, tPosL p, tList *L) {
     tPosL q, r;
 
-    if (!createNode(&q)) {
+    if (!createNode(&q))
         return false;
+    
+    q->data = d;
+    q->next = LNULL;
+    if (*L == LNULL) {
+        *L = q;
+    } else if (p == LNULL) {
+        for (r = *L; r->next != LNULL; r = r->next);
+        r->next = q;
+    } else if (p == *L) {
+        q->next = p;
+        *L = q;
     } else {
-        q->data = d;
-        q->next = LNULL;
-        if (*L == LNULL) {
-            *L = q;
-        } else if (p == LNULL) {
-            for (r = *L; r->next != LNULL; r = r->next);
-            r->next = q;
-        } else if (p == *L) {
-            q->next = p;
-            *L = q;
-        } else {
-            q->data = p->data;
-            p->data = d;
-            q->next = p->next;
-            p->next = q;
-        }
-        return true;
+        q->data = p->data;
+        p->data = d;
+        q->next = p->next;
+        p->next = q;
     }
+    return true;
 }
 
-void updateItem(tItemL d, tPosL p, __attribute__((unused)) tList *L) {
+void updateItem(tItemL d, tPosL p, tList *L) {
     p->data = d;
 }
 
@@ -78,7 +77,7 @@ bool isEmptyList(tList L) {
     return L == LNULL;
 }
 
-tItemL getItem(tPosL p, __attribute__((unused)) tList L) {
+tItemL getItem(tPosL p, tList L) {
     return p->data;
 }
 
@@ -92,7 +91,7 @@ tPosL last(tList L) {
     return p;
 }
 
-tPosL next(tPosL p, __attribute__((unused)) tList L) {
+tPosL next(tPosL p, tList L) {
     return p->next;
 }
 
