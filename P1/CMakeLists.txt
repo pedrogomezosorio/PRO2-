@@ -15,7 +15,8 @@ endif()
 
 set(CMAKE_VERBOSE_MAKEFILE true)
 add_definitions(-DINPUT_FILE="${input}")
-add_executable(main main.c types.h ${dependencies})
+add_executable(main main.c types.h ${dependencies}
+        dynamic_list.c)
 add_executable(test_lists types.h test.c ${dependencies})
 target_compile_options(main PRIVATE -Wall -Wextra)
 target_compile_options(test_lists PRIVATE -Wall -Wextra)
