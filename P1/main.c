@@ -24,24 +24,70 @@
 
 
 
-void processCommand(char *commandNumber, char command, char *param1, char *param2, char *param3, char *param4) {
-
+void processCommand(tList *list,char *commandNumber, char command, char *param1, char *param2, char *param3, char *param4) {
+    tItemL item;
+    tPosL pos;
     switch (command) {
         case 'N':
+            printf("********************\n");
             printf("Command: %s %c %s %s %s %s\n", commandNumber, command, param1, param2, param3, param4);
+            strcpy(item.consoleId , param1);
+            strcpy(item.seller , param2);
+            item.consoleBrand = (strcmp(param3, "nintendo") == 0) ? nintendo : sega;
+                printf("+ Error: New not possible\n");
+            item.consolePrice = atof(param4);
+            item.bidCounter = 0;
+            if (insertItem(item, LNULL, &list)) {
+                printf("* New: console %s seller %s brand %s price %.2f\n", param1, param2,param3,  param4);
+            } else {
+                printf("+ Error: New not possible\n");
+            }
             break;
         case 'D':
+            pos = findItem(param1, *list);
+            if (pos == LNULL){
+                printf("+ Error: Delete not possible\n");
+            } else {
+                item = getItem(pos, *list);
+                deleteAtPosition(pos, &list);
+                printf("* Delete: console %s seller %s brand %s price %.2f\n",param1, param2, param3, param4);
+            }
             break;
         case 'B':
+            pos = findItem(param1, *list);
+            if (pos == LNULL) {
+                printf("+ Error: Bid not possible\n");
+            } else {
+                item = getItem(pos, *list);
+                if (strcmp(item.seller, param2) == 0 || atof(param3) <= item.consolePrice) {
+                    printf("+ Error: Bid not possible\n");
+                } else {
+                    item.consolePrice = atof(param3);
+                    item.bidCounter++;
+                    updateItem(item, pos, list);
+                    printf("* Bid: console %s seller %s brand %s price %.2f bids %d\n", item.consoleId, item.seller, param3, item.consolePrice, item.bidCounter);
+                }
+            }
             break;
         case 'S':
+            if(isEmptyList(*list)){
+                printf("+ Error: Stats not possible\n");
+            } else {
+               pos = first(*list);
+                while (pos != LNULL) {
+                item = getItem(pos, *list);
+                printf("* Console: %s seller %s brand %s price %.2f bids %d\n", param1, param2, param3, param4);
+                pos = next(pos, *list);
+                }
+            }
             break;
         default:
+            printf("Unknown command\n");
             break;
     }
 }
 
-void readTasks(char *filename) {
+void readTasks(char *filename, tList *list) {
     FILE *f = NULL;
     char *commandNumber, *command, *param1, *param2, *param3, *param4;
     const char delimiters[] = " \n\r";
@@ -59,7 +105,7 @@ void readTasks(char *filename) {
             param3 = strtok(NULL, delimiters);
             param4 = strtok(NULL, delimiters);
 
-            processCommand(commandNumber, command[0], param1, param2, param3, param4);
+            processCommand(list, commandNumber, command[0], param1, param2, param3, param4);
         }
 
         fclose(f);
@@ -71,7 +117,8 @@ void readTasks(char *filename) {
 
 
 int main(int nargs, char **args) {
-
+    tList list;
+    createEmptyList(&list);
     char *file_name = "new.txt";
 
     if (nargs > 1) {
@@ -82,26 +129,8 @@ int main(int nargs, char **args) {
         #endif
     }
 
-    readTasks(file_name);
+    readTasks(file_name, &list);
 
     return 0;
 }
 
-/*void new(tList L, tItemL consola)
-{
-    tPosL pos;
-    tItemL item;
-    pos = findItem(consola.consoleId, L);
-    if (pos == LNULL)
-    {
-        insertItem(consola, LNULL, &L);
-    }
-    else
-    {
-        item = getItem(pos, L);
-        if (item.consolePrice < consola.consolePrice)
-        {
-            updateItem(consola, pos, &L);
-        }
-    }
-}*/

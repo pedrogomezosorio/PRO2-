@@ -4,8 +4,8 @@
  * AUTHOR 1: Samuel Mouriño Cernadas LOGIN 1: samuel.mourino@udc.es
  * AUTHOR 2: Pedro Gomez Osorio LOGIN 2: pedro.gomez.osorio@udc.es
  * GROUP: 2.3
- * DATE:
-*/
+ * DATE:  14 / 03 / 2025
+ */
 #ifndef DYNAMIC_LIST_H
 #define DYNAMIC_LIST_H
 
