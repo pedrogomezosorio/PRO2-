@@ -2,17 +2,19 @@
  * TITLE: PROGRAMMING II LABS
  * SUBTITLE: Practical 2
  * AUTHOR 1: Samuel Mouriño Cernadas  LOGIN 1: samuel.mourino@udc.es
- * AUTHOR 2: ***************************** LOGIN 2: **********
- * GROUP: *.*
- * DATE: ** / ** / **
+ * AUTHOR 2: Pedro Gómez Osorio LOGIN 2: pedro.gomez.osorio@udc.es
+ * GROUP: 2.3
+ * DATE: 01 / 04 / 2025
  */
 
 #ifndef CONSOLE_LIST_H
 #define CONSOLE_LIST_H
 
-#include <vss.h>
+
+#include <stdbool.h>
 #include "types.h"
-#include "bid_stack.h"  // Se incluirá cuando definamos la pila de pujas
+#include "bid_stack.h"
+
 
 // Definición de la estructura de un elemento de la lista
 typedef struct {
