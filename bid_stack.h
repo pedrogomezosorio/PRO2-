@@ -2,7 +2,7 @@
  * TITLE: PROGRAMMING II LABS
  * SUBTITLE: Practical 2
  * AUTHOR 1: Samuel Mouriño Cernadas LOGIN 1: samuel.mourino@udc.es
- * AUTHOR 2: Pedro Gómez Osorio LOGIN 2: **********
+ * AUTHOR 2: Pedro Gómez Osorio LOGIN 2: pedro.gomez.osorio@udc.es
  * GROUP: 2.3
  * DATE: 01 / 04 / 2025
  */
@@ -10,15 +10,18 @@
 #ifndef BID_STACK_H
 #define BID_STACK_H
 
+#include <stdbool.h>
 #include "types.h"
 #include "console_list.h"
+
+
 
 #define MAX_BIDS 25
 #define SNULL -1
 
 typedef struct {
     tUserId bidder;       // Usuario que realiza la puja
-    tConsolePrice amount; // Monto de la puja
+    tConsolePrice consolePrice; // Monto de la puja0
 } tItemS;
 
 typedef struct tStack {
