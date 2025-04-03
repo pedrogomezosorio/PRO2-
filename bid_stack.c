@@ -9,12 +9,10 @@
 
 #include "bid_stack.h"
 
-// Crea una pila vacía
 void createEmptyStack(tStack *S) {
     S->top = SNULL;
 }
 
-// Inserta una puja en la cima de la pila
 bool push(tItemS item, tStack *S) {
     if (S->top == MAX_BIDS - 1) {
         return false;
@@ -25,17 +23,15 @@ bool push(tItemS item, tStack *S) {
     }
 }
 
-// Elimina la puja en la cima de la pila
 void pop(tStack *S) {
     S->top--;
 }
 
-// Devuelve la puja en la cima sin eliminarla
 tItemS peek(tStack S) {
     return S.items[S.top];
 }
 
-// Verifica si la pila está vacía
 bool isEmptyStack(tStack S) {
     return S.top == -1;
 }
+
