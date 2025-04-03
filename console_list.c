@@ -25,6 +25,7 @@ bool isEmptyList(tList L) {
 tPosL first(tList L) {
     return L;
 }
+
 tPosL last(tList L) {
     tPosL p;
     for (p = L; p != LNULL && p->next != LNULL; p = p->next);
@@ -69,7 +70,6 @@ bool insertItem(tItemL d, tList *L) {
     if (newNode == NULL) return false;
 
     newNode->item = d;
-
 
     prev = LNULL;
     curr = *L;
