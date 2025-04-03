@@ -12,19 +12,17 @@
 
 #include <stdbool.h>
 #include "types.h"
-#include "console_list.h"
-
-
+//#include "console_list.h" //----> No es necesario incluir la lista de consolas aquí
 
 #define MAX_BIDS 25
-#define SNULL -1
+#define SNULL (-1)
 
 typedef struct {
-    tUserId bidder;       // Usuario que realiza la puja
-    tConsolePrice consolePrice; // Monto de la puja0
+    tUserId bidder;       //Usuario que realiza la puja
+    tConsolePrice consolePrice;
 } tItemS;
 
-typedef struct tStack {
+typedef struct {
     tItemS items[MAX_BIDS]; // Array de pujas
     int top;                // Índice del último elemento
 } tStack;
