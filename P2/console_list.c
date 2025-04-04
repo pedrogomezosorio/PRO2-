@@ -1,9 +1,10 @@
+
 /*
  * TITLE: PROGRAMMING II LABS
  * SUBTITLE: Practical 2
  * AUTHOR 1: Samuel Mouriño Cernadas LOGIN 1: samuel.mourino@udc.es
- * AUTHOR 2: Pedro Gómez Osorio LOGIN 2: pedro.gomo
- * GROUP: *2.3*
+ * AUTHOR 2: Pedro Gómez Osorio LOGIN 2: pedro.gomez.osorio@udc.es
+ * GROUP: 2.3
  * DATE: 01 / 04 / 2025
  */
 
@@ -25,6 +26,7 @@ bool isEmptyList(tList L) {
 tPosL first(tList L) {
     return L;
 }
+
 tPosL last(tList L) {
     tPosL p;
     for (p = L; p != LNULL && p->next != LNULL; p = p->next);
@@ -69,7 +71,6 @@ bool insertItem(tItemL d, tList *L) {
     if (newNode == NULL) return false;
 
     newNode->item = d;
-
 
     prev = LNULL;
     curr = *L;

@@ -1,115 +1,134 @@
 /*
  * TITLE: PROGRAMMING II LABS
  * SUBTITLE: Practical 2
- * AUTHOR 1: ***************************** LOGIN 1: **********
- * AUTHOR 2: ***************************** LOGIN 2: **********
- * GROUP: *.*
- * DATE: ** / ** / **
+ * AUTHOR 1: Samuel Mouriño Cernadas  LOGIN 1: samuel.mourino@udc.es
+ * AUTHOR 2: Pedro Gómez Osorio LOGIN 2: pedro.gomez.osorio@udc.es
+ * GROUP: 2.3
+ * DATE: 01 / 04 / 2025
  */
 
 #ifndef CONSOLE_LIST_H
 #define CONSOLE_LIST_H
 
+#include <stdbool.h>
 #include "types.h"
 #include "bid_stack.h"
 
-#include <stdbool.h>
-#define LNULL (-1)
-#define MAX 25
 
-typedef int tPosL;
+// Definición de la estructura de un elemento de la lista
 typedef struct {
-    tItemL data[MAX];
-    tPosL lastPos;
-} tList;
+    tUserId seller;
+    tConsoleId consoleId;
+    tConsoleBrand consoleBrand;
+    tConsolePrice consolePrice;
+    tBidCounter bidCounter;
+    tStack bidStack; // Pila con las pujas recibidas
+} tItemL;
 
-// en todas las funciones, excepto createEmptyList, que la lista esté inicializada es una precondición
 
-void createEmptyList(tList* L);
+// Definición del nodo de la lista
+typedef struct tNode *tPosL;
+struct tNode {
+    tItemL item;
+    tPosL next;
+};
+
+typedef tPosL tList;
+#define LNULL NULL
+typedef struct tNode *tPosL;
+
+
+void createEmptyList(tList *L);
 /*
- *  Objetivo: crear una lista vacía e inicializarla
- *  Salida: una lista vacía
-*/
-bool insertItem(tItemL d, tPosL p, tList *L);
-/*
- *  Objetivo: - Posición NULL -> añade el elemento al final de la lista
- *            - Otra posición -> el elemento queda insertado antes del que ocupa la posición indicada
- *  Entradas: - Item: elemento a insertar
- *            - Position: posición donde realizar la inserción
- *            - List: lista donde insertaremos el elemento
- *  Salida: lista con la inserción, true si se pudo realizar, false en caso contrario
- *  Precondición: Position es una posición válida o NULL
- *  Postcondición: Las posiciones de los elementos existentes antes de la inserción pudieron haber variado
+ *  Objetivo: inicializar la lista
+ *  Entradas: una lista
+ *  Salida: lista inicializada
  */
-void updateItem(tItemL d, tPosL p, tList *L);
-/*
- *  Objetivo: modificar el contenido de un elemento de la lista
- *  Entradas: - Item -> nuevo contenido a asignar al elemento en Position
- *            - Position -> posición del elemento que queremos modificar
- *            - List -> lista a modificar
- *  Salida: lista con el elemento modificado
- *  Precondición: Position es una posición válida de la lista
- */
-void deleteAtPosition(tPosL p, tList *L);
-/*
- *  Objetivo: eliminar de la lista un elemento en una posición
- *  Entradas: - Position -> posición del elemento a eliminar
- *            - List -> lista a modificar
- *  Salida: List sin el elemento a eliminar
- *  Precondición: Position es una posición válida
- *  Postcondición: las posiciones de los elementos de la lista pudieron haber variado
- */
-tPosL findItem(tConsoleId n, tList L);
-/*
- *  Objetivo: buscar la posición de cierto elemento
- *  Entradas: - Item -> elemento a buscar
- *            - List -> lista donde realizar la búsqueda
- *  Salida: posición del elemento encontrado o LNULL si no se encuentra
- */
+
 bool isEmptyList(tList L);
 /*
- *  Objetivo: determinar si la lista está vacía
- *  Entrada: lista a comprobar
- *  Salida: true si la lista está vacía, false si no lo está
+ *  Objetivo: comprobar si la lista está vacía
+ *  Entradas: una lista
+ *  Salida: true si la lista está vacía, false en caso contrario
  */
+
+bool insertItem(tItemL d, tList *L);
+/*
+ *  Objetivo: añadir un elemento a la lista
+ *  Entradas: - Item: elemento a añadir
+ *            - List: lista donde añadir el elemento
+ *  Salida: lista con el elemento añadido, true si se pudo realizar, false en caso contrario
+ *  Precondición: la lista no está llena
+ */
+
+void deleteAtPosition(tPosL p, tList *L);
+/*
+ *  Objetivo: eliminar un elemento de la lista
+ *  Entradas: - Position: posición del elemento a eliminar
+ *            - List: lista donde se encuentra el elemento
+ *  Salida: lista con el elemento eliminado
+ *  Precondición: la lista no está vacía y la posición es válida
+ */
+
+tPosL findItem(tConsoleId id, tList L);
+/*
+ *  Objetivo: buscar un elemento en la lista
+ *  Entradas: - Id: id del elemento a buscar
+ *            - List: lista donde buscar el elemento
+ *  Salida: posición del elemento encontrado, LNULL si no se encuentra
+ *  Precondición: la lista no está vacía
+ */
+
 tItemL getItem(tPosL p, tList L);
 /*
- *  Objetivo: recuperar el contenido de un elemento de la lista
- *  Entradas: - Position -> posición del elemento buscado
- *            - List -> lista donde realizar la búsqueda
- *  Salida: contenido del elemento en Position
- *  Precondición: Position es una posición válida de la lista
+ *  Objetivo: obtener un elemento de la lista
+ *  Entradas: - Position: posición del elemento a obtener
+ *            - List: lista donde se encuentra el elemento
+ *  Salida: elemento encontrado
+ *  Precondición: la lista no está vacía y la posición es válida
  */
+
+void updateItem(tItemL d, tPosL p, tList *L);
+/*
+ *  Objetivo: actualizar un elemento de la lista
+ *  Entradas: - Item: elemento a actualizar
+ *            - Position: posición del elemento a actualizar
+ *            - List: lista donde se encuentra el elemento
+ *  Salida: lista con el elemento actualizado
+ *  Precondición: la lista no está vacía y la posición es válida
+ */
+
 tPosL first(tList L);
 /*
- *  Objetivo: devolver la posición del primer elemento de la lista
- *  Entrada: lista donde buscarlo
- *  Salida: posición del primer elemento
- *  Precondición: la lista no está vacía
+ *  Objetivo: obtener la primera posición de la lista
+ *  Entradas: una lista
+ *  Salida: posición del primer elemento de la lista, LNULL si la lista está vacía
  */
+
 tPosL last(tList L);
 /*
- *  Objetivo: devolver la posición del último elemento de la lista
- *  Entrada: lista donde buscarlo
- *  Salida: posición del último elemento
- *  Precondición: la lista no está vacía
+ *  Objetivo: obtener la última posición de la lista
+ *  Entradas: una lista
+ *  Salida: posición del último elemento de la lista, LNULL si la lista está vacía
  */
-tPosL previous(tPosL p, tList L);
-/*
- *  Objetivo: devolver la posición del elemento anterior al dado
- *  Entradas: - Position -> posición del elemento dado
- *            - List -> lista donde buscarlo
- *  Salida: posición del elemento anterior o LNULL si el dado es el primero
- *  Precondición: Position es una posición válida de la lista
- */
+
 tPosL next(tPosL p, tList L);
 /*
- *  Objetivo: devolver la posición del elemento siguiente al dado
- *  Entradas: - Position -> posición del elemento dado
- *            - List -> lista donde buscarlo
- *  Salida: posición del elemento siguiente o LNULL si el dado es el último
- *  Precondición: Position es una posición válida de la lista
+ *  Objetivo: obtener la siguiente posición de la lista
+ *  Entradas: - Position: posición del elemento actual
+ *            - List: lista donde se encuentra el elemento
+ *  Salida: posición del siguiente elemento, LNULL si no hay siguiente
+ *  Precondición: la lista no está vacía y la posición es válida
+ */
+
+tPosL previous(tPosL p, tList L);
+/*
+ *  Objetivo: obtener la posición anterior de la lista
+ *  Entradas: - Position: posición del elemento actual
+ *            - List: lista donde se encuentra el elemento
+ *  Salida: posición del elemento anterior, LNULL si no hay anterior
+ *  Precondición: la lista no está vacía y la posición es válida
  */
 
 
-#endif
+#endif // PRO2_2025_P2_CONSOLE_LIST_H
