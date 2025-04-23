@@ -35,45 +35,39 @@ while getopts "p:v" opt; do
           ;;
     esac
 done
+MAIN="./"$MAIN_NAME
 if [ "$MAIN_NAME" = "main" ]
 then
-  ficherosEntrada=("script_minimos/new" "script_minimos/bid" "script_minimos/delete" "script_minimos/invalidate" "script_minimos/award" "script_minimos/remove")
-  ficherosRef=("script_minimos/new_ref" "script_minimos/bid_ref" "script_minimos/delete_ref" "script_minimos/invalidate_ref" "script_minimos/award_ref" "script_minimos/remove_ref")
+  ficherosEntrada=("script_minimos/new" "script_minimos/bid" "script_minimos/delete")
+  ficherosRef=("script_minimos/new_ref" "script_minimos/bid_ref" "script_minimos/delete_ref")
 else
   ficherosEntrada=("")
-  ficherosRef=("script_test/test_bid_stack_ref" "script_test/test_console_list_ref")
+  ficherosRef=("script_test/ref")
 fi
-
-
-
 
 # Funcion para comprobar la salida del programa
 # Parametros de entrada:
-#   - programa a comprobar
-#   - número mínimo de salidas correctas para superar un seguimiento
+#   - descripcion tipo de lista
+#   - nombre unit a probar
 #   - salida verbosa
 # Parametros de salida:
 #   - Exito (1) o fallo (0) en la comprobacion
 function check_output {
-    MAIN=$1
-    MIN=$2
-    DEPS=$3
-    VERBOSE=$4
+    LIST_TYPE_DESC=$1
+    DEPS=$2
+    VERBOSE=$3
 
     rm -f ${MAIN}
-    
 
     printf "${AMARILLO}Running script for ${LIST_TYPE_DESC} list...${RESET}"
-    printf "\n${AMARILLO}Compiling "$MAIN_NAME" program with\ngcc -Wall -Wextra types.h ${DEPS} ${MAIN}.c -o ${MAIN}${RESET}\n"
+    printf "\n${AMARILLO}Compiling "$MAIN_NAME" program using ${LIST_TYPE_DESC} list with\ngcc -Wall -Wextra ${DEPS} ${MAIN}.c -o ${MAIN}${RESET}\n"
 
     gcc -Wall -Wextra ${DEPS} ${MAIN}.c -o ${MAIN}
-    
-    checkpoint=1
 
     if [ -f ${MAIN} ]
     then
         allOK=1
-        printf "\n${AMARILLO}Checking "$MAIN_NAME" program output...\n${RESET}"
+        printf "\n${AMARILLO}Checking "$MAIN_NAME" program output using ${LIST_TYPE_DESC} list...\n${RESET}"
 	    printf "\n${SUBR}Input file${RESET}                          ${SUBR}Result${RESET}  ${SUBR}Notes${RESET}\n"
       for index in ${!ficherosEntrada[*]}
 	    do
@@ -83,11 +77,11 @@ function check_output {
 	    	    ficheroEntrada="$nombre".txt
         else
             ficheroEntrada=""
-            nombre="script_test/${MAIN:2:100}"
+            nombre="script_test/test"
             #nombre=$index
         fi
 	    	ficheroReferencia=${ficherosRef[$index]}.txt
-	    	ficheroSalida="$nombre"_output.txt
+	    	ficheroSalida="$nombre"_${LIST_TYPE_DESC}.txt
 	    	ficheroDiff="$nombre"_diff.txt
 	    	${MAIN} $ficheroEntrada > $ficheroSalida
 	    	diff -w -B -b -y --suppress-common-lines --width=170 $ficheroReferencia $ficheroSalida > $ficheroDiff
@@ -98,14 +92,9 @@ function check_output {
 	    	if [ ${iguales} -eq "0" ]
 	    	then
 	    		printf "%-35s %-12s %s\n" "$ficheroEntrada" "${VERDE}OK"  "${RESET}"
-                    
 	    	else
 	    		printf "%-35s %-12s %s\n" "$ficheroEntrada" "${ROJO}FAIL" "${RESET}Check ${ficheroReferencia} and ${ficheroSalida}"
 	    		allOK=0
-	    		if [ $index -lt $MIN ]
-	    		then
-                    checkpoint=0
-                fi
         	    if  ${VERBOSE}
     		    then
     		        printf '\nFile: %-77s |   File: %s\n' $ficheroReferencia $ficheroSalida
@@ -119,12 +108,10 @@ function check_output {
 	    done
     else
    		allOK=0
-      checkpoint=0
 	    printf "\n${ROJO}Compilation failed${RESET}"
     fi
 	printf "\n"
-	
-	return ${allOK}
+    return ${allOK}
 }
 
 
@@ -141,7 +128,6 @@ function show_result {
     printf "\n"
 }
 
-
 #Comprobar que existen en path actual los ficheros output de referencia
 #(sino, tal y como está el script da un OK a pesar de mostrar un error en el diff)
 for file in ${ficherosRef[@]}
@@ -153,40 +139,29 @@ do
 	fi
 done
 
-
-if [ "$MAIN_NAME" = "main" ]
-then
-  check_output "./main" 2 "bid_stack.c console_list.c" ${VERBOSE}
-  MAIN_OK=${allOK}
-  CHECKPOINT_OK=${checkpoint}
-  show_result "Checkpoint #2 result (April 25th):" ${CHECKPOINT_OK}
-  show_result "Main global result:" ${MAIN_OK}
-  
-else
-#4 de abril, primer seguimiento
-  ficherosRef=("script_test/test_bid_stack_ref")
-  check_output "./test_bid_stack" 0 "bid_stack.c" ${VERBOSE}
-  BID_STACK_OK=${allOK}
-  show_result "Bid stack test:" ${BID_STACK_OK}
-  
-  printf "\n"
-  
-  ficherosRef=("script_test/test_console_list_ref")
-  check_output "./test_console_list" 0 "console_list.c" ${VERBOSE}
-  CONSOLE_LIST_OK=${allOK}
-  show_result "Console list test:" ${CONSOLE_LIST_OK}
-  
-  printf "\n"
-  
-  printf "${AMARILLO}Summary:\n"
-  printf "========\n"
-  show_result "Bid stack test:" ${BID_STACK_OK}
-  show_result "Console list test:" ${CONSOLE_LIST_OK}
-  show_result "Tests global result (checkpoint #1 - April 4th):" $((${BID_STACK_OK} * ${CONSOLE_LIST_OK}))
-  
-  
+check_output "Static" "-DSTATIC_LIST static_list.h static_list.c" ${VERBOSE}
+STATIC_OK=$?
+if [ "$MAIN_NAME" = "test" ]; then
+    smesss=" (checkpoint #1 - March 7th)"
 fi
+show_result "Static List result${smesss}:" $STATIC_OK
+
+printf "\n\n"
+
+check_output "Dynamic" "-DDYNAMIC_LIST dynamic_list.h dynamic_list.c" ${VERBOSE}
+DYNAMIC_OK=$?
+if [ "$MAIN_NAME" = "test" ]; then
+    smessd=" (checkpoint #2 - March 14th)"
+fi
+show_result "Dynamic List result${smessd}:" $DYNAMIC_OK
+
+printf "\n\n"
 
 
-
+ALL_OK=$((${STATIC_OK} * ${DYNAMIC_OK}))
+printf "${AMARILLO}Summary:\n"
+printf "========\n"
+show_result "Static List result${smesss}:" $STATIC_OK
+show_result "Dynamic List result${smessd}:" $DYNAMIC_OK
+show_result "Global result:" $ALL_OK
 printf "\n"

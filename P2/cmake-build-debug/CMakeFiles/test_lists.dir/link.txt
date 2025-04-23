@@ -1,0 +1,3 @@
+"C:\Program Files\JetBrains\CLion 2024.2.2\bin\cmake\win\x64\bin\cmake.exe" -E rm -f CMakeFiles\test_lists.dir/objects.a
+"C:\PROGRA~1\JetBrains\CLion 2024.2.2\bin\mingw\bin\ar.exe" qc CMakeFiles\test_lists.dir/objects.a @CMakeFiles\test_lists.dir\objects1.rsp
+"C:\PROGRA~1\JetBrains\CLion 2024.2.2\bin\mingw\bin\gcc.exe" -g -Wl,--whole-archive CMakeFiles\test_lists.dir/objects.a -Wl,--no-whole-archive -o "C:\Users\usuario1\CLionProjects\PRACTICAS 24-25\P0\PRO2-\P1\bin\test_lists.exe" -Wl,--out-implib,libtest_lists.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\test_lists.dir\linkLibs.rsp
