@@ -1,10 +1,10 @@
 /*
  * TITLE: PROGRAMMING II LABS
  * SUBTITLE: Practical 2
- * AUTHOR 1: ***************************** LOGIN 1: **********
- * AUTHOR 2: ***************************** LOGIN 2: **********
- * GROUP: *.*
- * DATE: ** / ** / **
+ * AUTHOR 1: Samuel Mouriño Cernadas LOGIN 1: samuel.mourino@udc.es
+ * AUTHOR 2: Pedro Gómez Osorio LOGIN 2: pedro.gomez.osorio@udc.es
+ * GROUP: 2.3
+ * DATE: 25 / 04 / 2025
  */
 
 #include <stdio.h>
@@ -17,16 +17,16 @@
 
 #define MAX_BUFFER 255
 
-void new(char *commandNumber, char command, char *consoleId, char *userId, char *consoleBrand,
-                char *consolePrice, tList *L)
-{
+tList L;
+
+void new(char *commandNumber, char command, char *consoleId, char *userId, char *consoleBrand, char *consolePrice, tList *L){
     tItemL item;
 
-    printf("%s %c: console %s seller %s brand %s price %s\n", commandNumber, command, consoleId, userId,
-           consoleBrand, consolePrice);
+    printf("********************\n");
+    double price = atof(consolePrice);
+    printf("%s %c: console %s seller %s brand %s price %.2f\n", commandNumber, command, consoleId, userId, consoleBrand, price);
 
-    if (findItem(consoleId, *L) != LNULL)
-    {
+    if (findItem(consoleId, *L) != LNULL) {
         printf("+ Error: New not possible\n");
         return;
     }
@@ -34,165 +34,179 @@ void new(char *commandNumber, char command, char *consoleId, char *userId, char 
     strcpy(item.consoleId, consoleId);
     strcpy(item.seller, userId);
 
-    if (strcmp(consoleBrand, "nintendo") == 0)
+    if(strcmp(consoleBrand, "nintendo") == 0) {
         item.consoleBrand = nintendo;
-    else if (strcmp(consoleBrand, "sega") == 0)
+    } else if (strcmp(consoleBrand, "sega") == 0) {
         item.consoleBrand = sega;
-    else {
+    } else {
         printf("+ Error: New not possible\n");
         return;
     }
 
-    item.consolePrice = atof(consolePrice);
+    item.consolePrice = price;
     item.bidCounter = 0;
     createEmptyStack(&item.bidStack);
 
-    if (insertItem(item, L))
-    {
-        printf("* New: console %s seller %s brand %s price %.2f\n", consoleId, userId,consoleBrand,
-               atof(consolePrice));
+    if (insertItem(item, L)) {
+        printf("* New: console %s seller %s brand %s price %.2f\n", consoleId, userId, consoleBrand, price);
     } else {
         printf("+ Error: New not possible\n");
     }
 }
 
-void delete(char *commandNumber, char command, char *consoleId, tList *L)
-{
-    tItemL item;
-    tPosL pos;
-    printf("%s %c: console %s\n", commandNumber, command, consoleId);
+void bid(char *commandNumber, char command, char *consoleId, char *userId, char *newPriceStr, tList *L) {
+    printf("********************\n");
+    double price = atof(newPriceStr);
+    printf("%s %c: console %s bidder %s price %s\n", commandNumber, command, consoleId, userId, newPriceStr);
 
-    pos = findItem(consoleId, *L);
-
-    if (pos == LNULL)
-    {
-        printf("+ Error: Delete not possible\n");
+    tPosL pos = findItem(consoleId, *L);
+    if (pos == LNULL) {
+        printf("+ Error: Bid not possible\n");
         return;
     }
 
-    item = getItem(pos, *L);
+    tItemL item = getItem(pos, *L);
+    tConsolePrice newPrice = atof(newPriceStr);
 
-    while(!isEmptyStack(item.bidStack))     // vaciamos la pila de pujas para poder eliminar la consola
-    {
-        peek(item.bidStack);
+    if (strcmp(item.seller, userId) == 0 || newPrice <= item.consolePrice) {
+        printf("+ Error: Bid not possible\n");
+        return;
     }
 
-    deleteAtPosition(pos, L);
+    tItemS bidItem;
+    strcpy(bidItem.bidder, userId);
+    bidItem.consolePrice = newPrice;
 
-    if (item.consoleBrand == 0)
-        printf("* Delete: console %s seller %s brand %s price %.2f bids %d\n",item.consoleId,
-               item.seller, "nintendo", item.consolePrice, item.bidCounter);
-    else
-        printf("* Delete: console %s seller %s brand %s price %.2f bids %d\n",item.consoleId,
-               item.seller, "sega", item.consolePrice, item.bidCounter);
+    if (!push(bidItem, &item.bidStack)) {
+        printf("+ Error: Bid not possible\n");
+        return;
+    }
+
+    item.consolePrice = newPrice;
+    item.bidCounter++;
+    updateItem(item, pos, L);
+
+    printf("* Bid: console %s bidder %s brand %s price %.2f bids %d\n",
+           item.consoleId, userId,
+           (item.consoleBrand == nintendo) ? "nintendo" : "sega",
+           item.consolePrice, item.bidCounter);
 }
 
-void bid(char *commandNumber, char command, char *consoleId, char *userId, char *consolePrice, tList *L)
-{
+void stats(char *commandNumber, char command, tList *L) {
+    printf("********************\n");
+    printf("%s %c\n", commandNumber, command);
 
+    if (isEmptyList(*L)) {
+        printf("+ Error: Stats not possible\n");
+        return;
+    }
+
+    tPosL p;
+    int nintendoCount = 0, segaCount = 0;
+    float nintendoTotal = 0, segaTotal = 0;
+    float maxIncrease = -1;
+    tItemL topItem;
+    tItemS topBid;
+
+    for (p = first(*L); p != LNULL; p = next(p, *L)) {
+        tItemL item = getItem(p, *L);
+        printf("Console %s seller %s brand %s price %.2f. ",
+               item.consoleId, item.seller,
+               (item.consoleBrand == nintendo) ? "nintendo" : "sega",
+               item.consolePrice);
+
+        if (!isEmptyStack(item.bidStack)) {
+            tItemS top = peek(item.bidStack);
+            printf("bids %d top bidder %s\n", item.bidCounter, top.bidder);
+
+            float basePrice = item.bidStack.items[0].consolePrice;
+            float increase = ((top.consolePrice - basePrice) / basePrice) * 100.0;
+            if (increase > maxIncrease) {
+                maxIncrease = increase;
+                topItem = item;
+                topBid = top;
+            }
+        } else {
+            printf("No bids\n");
+        }
+
+        if (item.consoleBrand == nintendo) {
+            nintendoCount++;
+            nintendoTotal += item.consolePrice;
+        } else {
+            segaCount++;
+            segaTotal += item.consolePrice;
+        }
+    }
+
+    printf("\nBrand        Consoles    Price    Average\n");
+    printf("Nintendo    %8d %8.2f %8.2f\n", nintendoCount, nintendoTotal,
+           (nintendoCount > 0) ? nintendoTotal / nintendoCount : 0.0);
+    printf("Sega        %8d %8.2f %8.2f\n", segaCount, segaTotal,
+           (segaCount > 0) ? segaTotal / segaCount : 0.0);
+
+    if (maxIncrease >= 0) {
+        printf("Top bid: console %s seller %s brand %s price %.2f bidder %s top price %.2f increase %.2f%%\n",
+               topItem.consoleId, topItem.seller,
+               (topItem.consoleBrand == nintendo) ? "nintendo" : "sega",
+               topItem.consolePrice, topBid.bidder, topBid.consolePrice, maxIncrease);
+    } else {
+        printf("Top bid not possible\n");
+    }
 }
 
-void award(char *commandNumber, char command, char *consoleId, tList *L)
-{
-
-}
-
-void invalidateBids(char *commandNumber, char command, tList *L)
-{
-
-}
-
-void removeConsole(char *commandNumber, char command, tList *L)
-{
-
-}
-
-void stats(char *commandNumber, char command, tList *L)
-{
-
-}
-
-void processCommand(char *commandNumber, char command, char *param1, char *param2, char *param3, char *param4, tList *L) {
-    switch (command)
-    {
+void processCommand(char *commandNumber, char command, char *param1, char *param2, char *param3, char *param4) {
+    switch (command) {
         case 'N':
-            new(commandNumber, command, param1, param2, param3, param4, L);
+            new(commandNumber, command, param1, param2, param3, param4, &L);
             break;
-
-        case 'D':
-            delete(commandNumber, command, param1, L);
-            break;
-
         case 'B':
-            bid (commandNumber, command, param1, param2, param3, L);
+            bid(commandNumber, command, param1, param2, param3, &L);
             break;
-
-        case 'A':
-            award(commandNumber, command, param1, L);
-            break;
-
-        case 'I':
-            invalidateBids(commandNumber, command, L);
-            break;
-
-        case 'R':
-            removeConsole(commandNumber, command, L);
-            break;
-
         case 'S':
-            stats(commandNumber, command, L);
+            stats(commandNumber, command, &L);
             break;
-
         default:
-            printf("Unknown command\n");
             break;
     }
 }
 
-void readTasks(char *filename)
-{
+void readTasks(char *filename) {
     FILE *f = NULL;
     char *commandNumber, *command, *param1, *param2, *param3, *param4;
     const char delimiters[] = " \n\r";
     char buffer[MAX_BUFFER];
 
     f = fopen(filename, "r");
-    tList L;
     createEmptyList(&L);
 
-    if (f != NULL)
-    {
-        while (fgets(buffer, MAX_BUFFER, f))
-        {
+    if (f != NULL) {
+        while (fgets(buffer, MAX_BUFFER, f)) {
             commandNumber = strtok(buffer, delimiters);
             command = strtok(NULL, delimiters);
             param1 = strtok(NULL, delimiters);
             param2 = strtok(NULL, delimiters);
             param3 = strtok(NULL, delimiters);
             param4 = strtok(NULL, delimiters);
-
-            processCommand(commandNumber, command[0], param1, param2, param3, param4, &L);
+            processCommand(commandNumber, command[0], param1, param2, param3, param4);
         }
         fclose(f);
-    }
-    else {
+    } else {
         printf("Cannot open file %s.\n", filename);
     }
 }
 
-int main(int nargs, char **args)
-{
+int main(int nargs, char **args) {
     char *file_name = "new.txt";
 
     if (nargs > 1) {
         file_name = args[1];
     } else {
-        #ifdef INPUT_FILE
+#ifdef INPUT_FILE
         file_name = INPUT_FILE;
-        #endif
+#endif
     }
 
     readTasks(file_name);
-
     return 0;
 }
